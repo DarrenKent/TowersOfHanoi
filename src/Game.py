@@ -12,13 +12,13 @@ class GameController:
 	def __init__(self):
 		# Read in User Settings
 		self.UserSettings = []
-		self.ReadUserSettings(False)
+		self.ReadUserSettings(True)
 		
 	def ReadUserSettings(self, reset):
 		if not reset:
 			file = open("user/user.cfg","r")
-		else
-			file = open("default.cfg","r")
+		else:
+			file = open("src/default.cfg","r")
 		line = file.readline()
 		while(line):
 			if line == "":
