@@ -1,4 +1,17 @@
 TowersOfHanoi
 =============
 
-A Simple Towers of Hanoi Game
+About the Game
+-------------
+This is a simple Towers Of Hanoi game. The objective is to move
+all of the stacked disks from one location to another without
+stacking larger disks on top of smaller ones.
+
+About the Creator
+-------------
+My name is Darren Kent and I am currently a student at Dixie State University studying Computer
+Science. Throughout my life games have been my passion. From board games to card games and
+ever since I got my first NES when I was a kid, video games. Over time I have developed many
+skills that will help me in the future of making games. For a long time I worked as a graphic
+artist and I have recently been working on my Bachelors degree in Computer Science. I figured
+with the skills I have, why not try my hand at making games.
