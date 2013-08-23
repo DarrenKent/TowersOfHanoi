@@ -9,12 +9,12 @@
 #----------------------------------
 
 import sys
-sys.path.insert(0,"src/")
+sys.path.insert(0,'src/')
 import Game
 
 def main():
 	game = Game.TowersOfHanoi()
 	game.Run()
 	
-if __name__=="__main__":
+if __name__ == '__main__':
 	main()

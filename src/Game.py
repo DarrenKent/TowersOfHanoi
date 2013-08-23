@@ -10,15 +10,19 @@
 #----------------------------------
 
 from GameController import *
+import StateManager
 
 class TowersOfHanoi(GameController):
 	def __init__(self):
-		GameController.__init__(self,"Towers Of Hanoi")
+		GameController.__init__(self,'Towers Of Hanoi')
+		self.StateMgr = StateManager.StateManager()
 		
 	def GameLogic(self):
-		if pygame.K_ESCAPE in self.KeyPressed:
-			self.Active = False
+		#if pygame.K_ESCAPE in self.KeyPressed:
+		#	self.Active = False
+		self.StateMgr.ExecuteCurrentStateLogic(self.KeyHeld,self.KeyPressed)
 		
 	def DrawScreen(self):
-		return
+		self.Screen.fill((0,0,0))
+		self.StateMgr.DrawCurrentState(self.Screen)
 		

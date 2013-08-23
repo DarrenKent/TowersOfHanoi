@@ -23,7 +23,7 @@ class GameController:
 		self.ReadUserSettings(True)
 		
 		# Initialize Window
-		self.Screen = pygame.display.set_mode( (self.UserSettings["[ScreenWidth]"],self.UserSettings["[ScreenHeight]"]),
+		self.Screen = pygame.display.set_mode( (self.UserSettings['[ScreenWidth]'],self.UserSettings['[ScreenHeight]']),
 												pygame.locals.DOUBLEBUF | pygame.locals.SRCALPHA)
 		pygame.display.set_caption(name)
 		
@@ -33,14 +33,14 @@ class GameController:
 
 		# Open Correct Settings
 		if not reset:
-			file = open("user/user.cfg","r")
+			file = open('user/user.cfg','r')
 		else:
-			file = open("src/default.cfg","r")
+			file = open('src/default.cfg','r')
 			
 		# Read through each line and store the settings
 		line = file.readline()
 		while(line):
-			if line == "":
+			if line == '':
 				break
 			setting = line.split()
 			value = int(setting[1])
@@ -52,7 +52,7 @@ class GameController:
 			
 	def WriteUserSettings(self):
 		# Open File to write
-		file = open("user/user.cfg","r")
+		file = open('user/user.cfg','r')
 		
 		# Read through each setting and save to file
 		for setting in self.UserSettings:
