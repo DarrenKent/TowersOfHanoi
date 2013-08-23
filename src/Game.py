@@ -4,37 +4,21 @@
 #	By: Darren Kent
 #
 #	Game.py
-#	This Class Handles Primary Game Loop and Functions
+#	This Class Handles A more Advanced Version
+#	of the Game Controller
 #
 #----------------------------------
 
-class GameController:
+from GameController import *
+
+class TowersOfHanoi(GameController):
 	def __init__(self):
-		# Read in User Settings
-		self.UserSettings = []
-		self.ReadUserSettings(True)
+		GameController.__init__(self,"Towers Of Hanoi")
 		
-	def ReadUserSettings(self, reset):
-		if not reset:
-			file = open("user/user.cfg","r")
-		else:
-			file = open("src/default.cfg","r")
-		line = file.readline()
-		while(line):
-			if line == "":
-				break
-			setting = line.split()
-			self.UserSettings.append([setting[0],setting[1]])
-			line = file.readline()
-		file.close()
-			
-	def WriteUserSettings(self):
-		file = open("user/user.cfg","r")
-		for setting in self.UserSettings:
-			file.write(setting[0] + " " + setting[1])
-		file.close()
+	def GameLogic(self):
+		if pygame.K_ESCAPE in self.KeyPressed:
+			self.Active = False
 		
-	def Run(self):
+	def DrawScreen(self):
 		return
-		
 		
