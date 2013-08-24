@@ -17,6 +17,7 @@ class GameController:
 		self.KeyHeld = set()
 		self.KeyPressed = set()
 		self.Active = True
+		self.Clock = pygame.time.Clock()
 		
 		# Read in User Settings
 		self.UserSettings = {}
@@ -80,8 +81,11 @@ class GameController:
 	
 	def Run(self):
 		while(self.Active):
+			# Advance Time
+			self.Clock.tick()
+			
 			# Reset Key Presses
-			KeyPressed = set()
+			self.KeyPressed = set()
 			
 			# Get Keyboard Input
 			self.GetKeyboardInput()

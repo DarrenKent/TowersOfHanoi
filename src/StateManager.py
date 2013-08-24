@@ -21,17 +21,17 @@ class StateManager:
 	def SetState(self,state):
 		self.CurrentState = state
 		
-	def ExecuteCurrentStateLogic(self,KeysHeld,KeysPressed):
+	def ExecuteCurrentStateLogic(self,keysHeld,keysPressed,clock):
 		if( not self.StateList[self.CurrentState].StateQuit):
-			self.StateList[self.CurrentState].ExecuteStateLogic(KeysHeld,KeysPressed)
+			self.StateList[self.CurrentState].ExecuteStateLogic(keysHeld,keysPressed,clock)
 		#else:
 			#if self.CurrentState = 'SplashState':
 				#self.CurrentState = 'MainMenuState'
 		
 		
-	def DrawCurrentState(self,screen):
+	def DrawCurrentState(self,screen,clock):
 		if( not self.StateList[self.CurrentState].StateQuit):
-			self.StateList[self.CurrentState].DrawStateFrame(screen)
+			self.StateList[self.CurrentState].DrawStateFrame(screen,clock)
 		
 	def AddState(self,StateName,State):
 		self.StateList[StateName] = State

@@ -20,9 +20,9 @@ class TowersOfHanoi(GameController):
 	def GameLogic(self):
 		#if pygame.K_ESCAPE in self.KeyPressed:
 		#	self.Active = False
-		self.StateMgr.ExecuteCurrentStateLogic(self.KeyHeld,self.KeyPressed)
+		self.StateMgr.ExecuteCurrentStateLogic(self.KeyHeld,self.KeyPressed,self.Clock)
 		
 	def DrawScreen(self):
 		self.Screen.fill((0,0,0))
-		self.StateMgr.DrawCurrentState(self.Screen)
+		self.StateMgr.DrawCurrentState(self.Screen,self.Clock)
 		
