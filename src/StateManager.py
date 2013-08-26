@@ -10,12 +10,15 @@
 
 import pygame
 import SplashState
+import MainMenuState
 
 class StateManager:
-	def __init__(self):
+	def __init__(self,screen):
 		self.StateList = {}
 		
+		self.AddState('MainMenuState',MainMenuState.MainMenuState(screen))
 		self.AddState('SplashState',SplashState.SplashState())
+		self.AddState('QuitState',None)
 		self.CurrentState = 'SplashState'
 		
 	def SetState(self,state):
@@ -24,14 +27,14 @@ class StateManager:
 	def ExecuteCurrentStateLogic(self,keysHeld,keysPressed,clock):
 		if( not self.StateList[self.CurrentState].StateQuit):
 			self.StateList[self.CurrentState].ExecuteStateLogic(keysHeld,keysPressed,clock)
-		#else:
-			#if self.CurrentState = 'SplashState':
-				#self.CurrentState = 'MainMenuState'
 		
 		
 	def DrawCurrentState(self,screen,clock):
-		if( not self.StateList[self.CurrentState].StateQuit):
+		if( self.CurrentState != 'QuitState' and not self.StateList[self.CurrentState].StateQuit ):
 			self.StateList[self.CurrentState].DrawStateFrame(screen,clock)
 		
 	def AddState(self,StateName,State):
 		self.StateList[StateName] = State
+		
+	def GetCurrentState(self):
+		return self.StateList[self.CurrentState]

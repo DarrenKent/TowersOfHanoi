@@ -15,14 +15,22 @@ import StateManager
 class TowersOfHanoi(GameController):
 	def __init__(self):
 		GameController.__init__(self,'Towers Of Hanoi')
-		self.StateMgr = StateManager.StateManager()
+		self.StateMgr = StateManager.StateManager(self.Screen)
 		
-	def GameLogic(self):
-		#if pygame.K_ESCAPE in self.KeyPressed:
-		#	self.Active = False
-		self.StateMgr.ExecuteCurrentStateLogic(self.KeyHeld,self.KeyPressed,self.Clock)
+	def GameLogic(self):		
+		if(self.StateMgr.CurrentState == 'QuitState'):
+			self.Active = False
+		else:
+			self.StateMgr.ExecuteCurrentStateLogic(self.KeyHeld,self.KeyPressed,self.Clock)
+			
+			if(self.StateMgr.CurrentState == 'SplashState' and self.StateMgr.GetCurrentState().StateQuit):
+				self.StateMgr.SetState('MainMenuState')
+			if(self.StateMgr.CurrentState == 'MainMenuState' and self.StateMgr.GetCurrentState().StateQuit):
+				self.StateMgr.SetState('QuitState')
+			
+			
+		
 		
 	def DrawScreen(self):
-		self.Screen.fill((0,0,0))
 		self.StateMgr.DrawCurrentState(self.Screen,self.Clock)
 		

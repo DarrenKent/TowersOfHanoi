@@ -10,14 +10,15 @@
 
 import os
 import pygame
+from State import *
 
-class SplashState():
+class SplashState(State):
 	def __init__(self):
+		State.__init__(self)
 		self.SplashScreens = [ ('dkapps.jpg',(255,255,255)) ]
 		self.CurrentSplash = 0
 		self.CurrentSplashFrame = 0
 		self.CurrentSplashAlpha = 0
-		self.StateQuit = False
 		
 	def ExecuteStateLogic(self,KeysHeld,KeysPressed,clock):
 		if pygame.K_ESCAPE in KeysPressed:
@@ -31,7 +32,7 @@ class SplashState():
 			self.CurrentSplashAlpha += 255 * clock.get_time()/1000.0
 		if self.CurrentSplashFrame > 645 and self.CurrentSplashFrame < 900:
 			self.CurrentSplashAlpha -= 255 * clock.get_time()/1000.0
-		if self.CurrentSplashFrame > 900:
+		if self.CurrentSplashFrame > 1000:
 			self.StateQuit = True
 			
 	def DrawStateFrame(self,screen,clock):

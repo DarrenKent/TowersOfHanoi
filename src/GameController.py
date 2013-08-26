@@ -21,7 +21,7 @@ class GameController:
 		
 		# Read in User Settings
 		self.UserSettings = {}
-		self.ReadUserSettings(True)
+		self.ReadUserSettings(False)
 		
 		# Initialize Window
 		self.Screen = pygame.display.set_mode( (self.UserSettings['[ScreenWidth]'],self.UserSettings['[ScreenHeight]']),
