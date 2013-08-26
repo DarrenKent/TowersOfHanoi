@@ -20,6 +20,8 @@ class SplashState(State):
 		self.CurrentSplashFrame = 0
 		self.CurrentSplashAlpha = 0
 		
+		self.SplashImage = pygame.image.load(os.path.join(os.path.join('data','textures'),self.SplashScreens[self.CurrentSplash][0]))
+		
 	def ExecuteStateLogic(self,KeysHeld,KeysPressed,clock):
 		if pygame.K_ESCAPE in KeysPressed:
 			self.StateQuit = True
@@ -37,6 +39,5 @@ class SplashState(State):
 			
 	def DrawStateFrame(self,screen,clock):
 		screen.fill(self.SplashScreens[self.CurrentSplash][1])
-		SplashImage = pygame.image.load(os.path.join(os.path.join('data','textures'),self.SplashScreens[self.CurrentSplash][0]))
-		SplashImage.set_alpha(self.CurrentSplashAlpha)
-		screen.blit(SplashImage,((screen.get_width()/2)-(SplashImage.get_width()/2),(screen.get_height()/2)-(SplashImage.get_width()/2)))
+		self.SplashImage.set_alpha(self.CurrentSplashAlpha)
+		screen.blit(self.SplashImage,((screen.get_width()/2)-(self.SplashImage.get_width()/2),(screen.get_height()/2)-(self.SplashImage.get_width()/2)))
