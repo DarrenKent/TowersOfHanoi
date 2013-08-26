@@ -23,12 +23,22 @@ class GameController:
 		self.UserSettings = {}
 		self.ReadUserSettings(False)
 		
-		# Initialize Window
-		self.Screen = pygame.display.set_mode( (self.UserSettings['[ScreenWidth]'],self.UserSettings['[ScreenHeight]']),
-												pygame.locals.DOUBLEBUF | pygame.locals.SRCALPHA)
-		pygame.display.set_caption(name)
-		pygame.init()
+		self.Screen = None
+		self.InitializeWindow(name)
 		
+		pygame.init()
+	
+	def InitializeWindow(self,name):
+		# Initialize Window
+		if(self.UserSettings['[Fullscreen]'] == 1):
+			self.Screen = pygame.display.set_mode( (self.UserSettings['[ScreenWidth]'],self.UserSettings['[ScreenHeight]']),
+												pygame.locals.DOUBLEBUF | pygame.locals.SRCALPHA | pygame.locals.FULLSCREEN)
+		else:
+			self.Screen = pygame.display.set_mode( (self.UserSettings['[ScreenWidth]'],self.UserSettings['[ScreenHeight]']),
+												pygame.locals.DOUBLEBUF | pygame.locals.SRCALPHA)
+			pygame.display.set_caption(name)
+		
+	
 	def ReadUserSettings(self, reset):
 		# Clear current User Settings
 		self.UserSettings = {}	
