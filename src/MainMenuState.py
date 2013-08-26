@@ -18,6 +18,7 @@ class MainMenuState(State):
 		self.Screen = screen
 		self.MenuStates = [ 'MainMenu' , 'SettingsMenu' , 'HighScores' , 'PlayMenu' ]
 		self.CurrentMenu = self.MenuStates[0]
+		self.MouseReleased = True
 		
 		#Load Button Images
 		QuitButton = pygame.image.load(os.path.join(os.path.join('data','textures'),'button_quit_standard.png'))
@@ -45,6 +46,11 @@ class MainMenuState(State):
 							['back',False,BackButton,BackButtonHover,self.BackHandler]]
 		
 	def ExecuteStateLogic(self,KeysHeld,KeysPressed,clock):
+		# Reset Mouse
+		if(not pygame.mouse.get_pressed()[0]):
+			self.MouseReleased = True
+		
+		# Execute Proper Menu Logic
 		if(self.CurrentMenu == self.MenuStates[0]):
 			self.ExecuteMainMenu()
 		elif(self.CurrentMenu == self.MenuStates[1]):
@@ -83,8 +89,9 @@ class MainMenuState(State):
 			if( x > leftMargin and x < rightMargin):
 				if( y > self.Screen.get_height() - self.MenuButtons[buttonNum][2].get_height() * ( 2 + buttonNum) - ( buttonNum * 10) and y < self.Screen.get_height() - self.MenuButtons[buttonNum][2].get_height() * ( 1 + buttonNum) - ( buttonNum * 10)):
 					self.MenuButtons[buttonNum][1] = True
-					if( pygame.mouse.get_pressed()[0] ):
+					if( pygame.mouse.get_pressed()[0] and self.MouseReleased):
 						self.MenuButtons[buttonNum][4]()
+						self.MouseReleased = False
 		
 	def ExecuteSettingsMenu(self):
 		#Buttons
@@ -95,8 +102,9 @@ class MainMenuState(State):
 		if( x > self.Screen.get_width() / 2 - self.MenuButtons[4][2].get_width() / 2 and x < self.Screen.get_width() / 2 + self.MenuButtons[4][2].get_width() / 2):
 			if( y > self.Screen.get_height() /2  + self.MenuBackgroundOverlay.get_height() / 2 + 10 and y < self.Screen.get_height() /2  + self.MenuBackgroundOverlay.get_height() / 2 + self.MenuButtons[4][2].get_height() + 10):
 				self.MenuButtons[4][1] = True
-				if( pygame.mouse.get_pressed()[0] ):
+				if( pygame.mouse.get_pressed()[0] and self.MouseReleased):
 					self.MenuButtons[4][4]()
+					self.MouseReleased = False
 		
 	def ExecuteHighScores(self):
 		pass
@@ -106,7 +114,7 @@ class MainMenuState(State):
 		
 	def DrawMainMenu(self):
 		# Draw Buttons
-		for button in range(len(self.MenuButtons)):
+		for button in range(len(self.MenuButtons)-1):
 			if(self.MenuButtons[button][1]):
 				self.Screen.blit(self.MenuButtons[button][3],(self.Screen.get_width() / 2 - self.MenuButtons[button][3].get_width() / 2, self.Screen.get_height() - self.MenuButtons[button][3].get_height() * (2 + button) - (button * 10) ))
 			else:

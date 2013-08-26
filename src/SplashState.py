@@ -29,12 +29,12 @@ class SplashState(State):
 		if self.CurrentSplash >= len(self.SplashScreens):
 			self.StateQuit = True
 		
-		self.CurrentSplashFrame += 1
-		if self.CurrentSplashFrame > 150 and self.CurrentSplashFrame < 405:
-			self.CurrentSplashAlpha += 255 * clock.get_time()/1000.0
-		if self.CurrentSplashFrame > 645 and self.CurrentSplashFrame < 900:
+		self.CurrentSplashFrame += 1 * clock.get_time()/1000.0
+		if self.CurrentSplashFrame > 1.5 and self.CurrentSplashFrame < 4:
+			self.CurrentSplashAlpha += 100 * clock.get_time()/1000.0
+		if self.CurrentSplashFrame > 8 and self.CurrentSplashFrame < 10:
 			self.CurrentSplashAlpha -= 255 * clock.get_time()/1000.0
-		if self.CurrentSplashFrame > 1000:
+		if self.CurrentSplashFrame > 11.5:
 			self.StateQuit = True
 			
 	def DrawStateFrame(self,screen,clock):
