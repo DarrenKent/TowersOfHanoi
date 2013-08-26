@@ -15,7 +15,7 @@ import StateManager
 class TowersOfHanoi(GameController):
 	def __init__(self):
 		GameController.__init__(self,'Towers Of Hanoi')
-		self.StateMgr = StateManager.StateManager(self.Screen)
+		self.StateMgr = StateManager.StateManager(self.Screen,self)
 		
 	def GameLogic(self):		
 		if(self.StateMgr.CurrentState == 'QuitState'):

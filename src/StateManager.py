@@ -13,10 +13,11 @@ import SplashState
 import MainMenuState
 
 class StateManager:
-	def __init__(self,screen):
+	def __init__(self,screen,gamecontroller):
 		self.StateList = {}
+		self.GameController = gamecontroller
 		
-		self.AddState('MainMenuState',MainMenuState.MainMenuState(screen))
+		self.AddState('MainMenuState',MainMenuState.MainMenuState(screen,gamecontroller))
 		self.AddState('SplashState',SplashState.SplashState())
 		self.AddState('QuitState',None)
 		self.CurrentState = 'SplashState'
