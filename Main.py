@@ -8,13 +8,16 @@
 #
 #----------------------------------
 
+# Imports
 import sys
 sys.path.insert(0,'src/')
 import Game
 
 def main():
+	# Create Game Object and Start Game
 	game = Game.TowersOfHanoi()
 	game.Run()
-	
-if __name__ == '__main__':
+
+# Call Main
+if( __name__ == '__main__'):
 	main()

@@ -8,11 +8,12 @@
 #
 #----------------------------------
 
+# Imports
 import pygame
 import pygame.locals
 
 class GameController:
-	def __init__(self,name):
+	def __init__( self , name ):
 		# Class Variables
 		self.KeyHeld = set()
 		self.KeyPressed = set()
@@ -21,78 +22,74 @@ class GameController:
 		
 		# Read in User Settings
 		self.UserSettings = {}
-		self.ReadUserSettings(False)
+		self.ReadUserSettings( False )
 		
+		# Initialize Window
 		self.Screen = None
-		self.InitializeWindow(name)
+		self.InitializeWindow( name )
 		
 		pygame.init()
 	
-	def InitializeWindow(self,name):
-		# Initialize Window
-		if(self.UserSettings['[Fullscreen]'] == 1):
-			self.Screen = pygame.display.set_mode( (self.UserSettings['[ScreenWidth]'],self.UserSettings['[ScreenHeight]']),
-												pygame.locals.DOUBLEBUF | pygame.locals.SRCALPHA | pygame.locals.FULLSCREEN)
+	def InitializeWindow( self , name ):
+		if( self.UserSettings['[Fullscreen]'] == 1 ):
+			self.Screen = pygame.display.set_mode( ( self.UserSettings['[ScreenWidth]'] , self.UserSettings['[ScreenHeight]'] ),
+												pygame.locals.DOUBLEBUF | pygame.locals.SRCALPHA | pygame.locals.FULLSCREEN )
 		else:
-			self.Screen = pygame.display.set_mode( (self.UserSettings['[ScreenWidth]'],self.UserSettings['[ScreenHeight]']),
-												pygame.locals.DOUBLEBUF | pygame.locals.SRCALPHA)
-			pygame.display.set_caption(name)
+			self.Screen = pygame.display.set_mode( ( self.UserSettings['[ScreenWidth]'] , self.UserSettings['[ScreenHeight]'] ),
+												pygame.locals.DOUBLEBUF | pygame.locals.SRCALPHA )
+			pygame.display.set_caption( name )
 		
 	
-	def ReadUserSettings(self, reset):
+	def ReadUserSettings( self , reset ):
 		# Clear current User Settings
 		self.UserSettings = {}	
 
 		# Open Correct Settings
 		if not reset:
-			file = open('user/user.cfg','r')
+			file = open( 'user/user.cfg' , 'r' )
 		else:
-			file = open('src/default.cfg','r')
+			file = open( 'src/default.cfg' , 'r' )
 			
 		# Read through each line and store the settings
 		line = file.readline()
-		while(line):
+		while( line ):
 			if line == '':
 				break
 			setting = line.split()
-			value = int(setting[1])
-			self.UserSettings[setting[0]] = value
+			self.UserSettings[setting[0]] = int( setting[1] )
 			line = file.readline()
 			
-		# Close the File
 		file.close()
 			
-	def WriteUserSettings(self):
-		
+	def WriteUserSettings( self ):
 		# Open File to write
-		file = open('user/user.cfg','w')
+		file = open( 'user/user.cfg' , 'w' )
 		
 		# Read through each setting and save to file
 		for setting in self.UserSettings:
-			file.write(setting + " " + str(self.UserSettings[setting])+"\n")
+			file.write( setting + " " + str( self.UserSettings[setting] ) + "\n" )
 			
-		# Close File
 		file.close()
 	
-	def GetKeyboardInput(self):
+	def GetKeyboardInput( self ):
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				pygame.quit()
 				self.Active = False
 			if event.type == pygame.KEYDOWN:
-				self.KeyHeld.add(event.key)
-				self.KeyPressed.add(event.key)
+				self.KeyHeld.add( event.key )
+				self.KeyPressed.add( event.key )
 			if event.type == pygame.KEYUP:
-				self.KeyHeld.discard(event.key)
+				self.KeyHeld.discard( event.key )
 	
-	def DrawScreen(self):
+	def DrawScreen( self ):
 		raise NotImplementedError()
 		
-	def GameLogic(self):
+	def GameLogic( self ):
 		raise NotImplementedError()
 	
-	def Run(self):
-		while(self.Active):
+	def Run( self ):
+		while( self.Active ):
 			# Advance Time
 			self.Clock.tick()
 			
@@ -105,7 +102,7 @@ class GameController:
 			# Calculate one Frame of Logic
 			self.GameLogic()
 			
-			if(self.Active):
+			if( self.Active ):
 				# Draw One Frame
 				self.DrawScreen()
 				pygame.display.flip()

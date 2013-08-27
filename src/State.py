@@ -8,13 +8,12 @@
 #
 #----------------------------------
 
-
 class State:
-	def __init__(self):
+	def __init__( self ):
 		self.StateQuit = False
 		
-	def ExecuteStateLogic(self,KeysHeld,KeysPressed,clock):
+	def ExecuteStateLogic( self , KeysHeld , KeysPressed , clock ):
 		raise NotImplementedError()
 		
-	def DrawStateFrame(self,screen,clock):
+	def DrawStateFrame( self , screen , clock ):
 		raise NotImplementedError()
