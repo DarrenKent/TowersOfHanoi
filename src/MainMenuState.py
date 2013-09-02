@@ -12,10 +12,12 @@
 import os
 import pygame
 from State import *
+import Button
+import CheckBox
 
-class MainMenuState(State):
-	def __init__(self,screen,gamecontroller):
-		State.__init__(self)
+class MainMenuState( State ):
+	def __init__( self , screen , gamecontroller ):
+		State.__init__( self )
 		
 		# Class Variables
 		self.Screen = screen
@@ -24,32 +26,45 @@ class MainMenuState(State):
 		self.MouseReleased = True
 		self.GameController = gamecontroller
 		
-		self.MenuButtons = []
-		ButtonImages = [ 'quit' , 'settings' , 'highscores' , 'play' , 'back' , 'save' ]
-		for button in ButtonImages:
-			standard = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'button_'+button+'_standard.png' ))
-			hover = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'button_'+button+'_hover.png' ))
-			buttonInfo = [ button , False , standard , hover , self.ButtonHandler ]
-			self.MenuButtons.append(buttonInfo)
-			
-		#Load Background Images
+		# Background Images
 		self.Background = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'jungle_background.png' ))
 		self.LeftOverlay = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'jungle_left.png' ))
 		self.RightOverlay = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'jungle_right.png' ))
 		self.MenuBackgroundOverlay = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'background_overlay.png' ))
 		
+		self.InitializeButtons()
+
+	def InitializeButtons( self ):
 		self.CheckBoxEmpty = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'checkbox_unchecked.png' ))
 		self.CheckBoxChecked = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures') , 'checkbox_checked.png' ))
 		
+		self.MenuButtons = []
+		ButtonImages = [ 'quit' , 'settings' , 'highscores' , 'play' ]
+		for button in range( len( ButtonImages )):
+			tNewButton = Button.Button( self.Screen.get_width() / 2 - 75 , self.Screen.get_height() - 50 * (2 + button) - (button * 10) , ButtonImages[button] , 'button_' + ButtonImages[button] + '_standard.png' , 'button_' + ButtonImages[button] + '_hover.png' , self.ButtonHandler )
+			self.MenuButtons.append(tNewButton)
+		self.MenuButtons.append(Button.Button( self.Screen.get_width() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - 160 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_height() / 2 - 60, 'back' , 'button_back_standard.png' , 'button_back_hover.png' , self.ButtonHandler ))
+		self.MenuButtons.append(Button.Button( self.Screen.get_width() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - 320 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_height() / 2 - 60, 'save' , 'button_save_standard.png' , 'button_save_hover.png' , self.ButtonHandler ))
+		
+		self.CheckBoxes = []
+		Checks = [ 'Fullscreen:' , '800x600' , '1024x768' , '1280x768' , '1360x768' , '1366x768' , '1600x900' ]
+		
+		columns = [ self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 30 , self.Screen.get_width() / 2 ]
+		
 		self.Text = pygame.font.SysFont( "times", 24 , True , False )
-		self.FullScreen = self.Text.render( "Fullscreen:" , 1 , (255,255,255) )
-		self.Resolutions = self.Text.render( "Screen Resolution:" , 1 , (255,255,255) )
-		self.Res800x600 = self.Text.render( "800 x 600" , 1 , (255,255,255) )
-		self.Res1024x768 = self.Text.render( "1024 x 768" , 1 , (255,255,255) )
-		self.Res1280x768 = self.Text.render( "1280 x 768" , 1 , (255,255,255) )
-		self.Res1360x768 = self.Text.render( "1360 x 768" , 1 , (255,255,255) )
-		self.Res1366x768 = self.Text.render( "1366 x 768" , 1 , (255,255,255) )
-		self.Res1600x900 = self.Text.render( "1600 x 900" , 1 , (255,255,255) )
+		Fullscreen = CheckBox.CheckBox( columns[0] , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 30 , Checks[0] , Checks[0] , self.Text )
+		if( self.GameController.UserSettings['[Fullscreen]'] == 1 ):
+			Fullscreen.Checked = True
+		self.CheckBoxes.append( Fullscreen )
+		resolution = str( self.GameController.UserSettings['[ScreenWidth]'] ) + 'x' + str( self.GameController.UserSettings['[ScreenHeight]'] )
+		count = 1
+		for col in range( 2 ):
+			for row in range( 3 ):
+				tCheckBox = CheckBox.CheckBox( columns[col] , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 83 + 30 * row , Checks[count] , Checks[count] , self.Text )
+				if( resolution == tCheckBox.ButtonId ):
+					tCheckBox.Checked = True
+				self.CheckBoxes.append(tCheckBox)
+				count += 1
 		
 	def ExecuteStateLogic( self , KeysHeld , KeysPressed , clock ):
 		# Reset Mouse
@@ -86,97 +101,56 @@ class MainMenuState(State):
 		
 	def ExecuteMainMenu( self ):
 		# Buttons
-		x,y = pygame.mouse.get_pos()
-		leftMargin = self.Screen.get_width() / 2 - self.MenuButtons[1][2].get_width() / 2
-		rightMargin = self.Screen.get_width() / 2 + self.MenuButtons[1][2].get_width() / 2
-		for buttonNum in range( len( self.MenuButtons )):
-			self.MenuButtons[buttonNum][1] = False
-			
-			if( x > leftMargin and x < rightMargin ):
-				if( y > self.Screen.get_height() - self.MenuButtons[buttonNum][2].get_height() * (2 + buttonNum) - (buttonNum * 10) and y < self.Screen.get_height() - self.MenuButtons[buttonNum][2].get_height() * (1 + buttonNum) - (buttonNum * 10) ):
-					self.MenuButtons[buttonNum][1] = True
-					if( pygame.mouse.get_pressed()[0] and self.MouseReleased ):
-						self.MenuButtons[buttonNum][4](self.MenuButtons[buttonNum][0])
-						self.MouseReleased = False
+		tX,tY = pygame.mouse.get_pos()
+		for button in self.MenuButtons:
+			button.SetMouseHover( tX, tY )
+			if( button.IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
+				self.MouseReleased = False
+				button.ExecuteButton()
 		
 	def ExecuteSettingsMenu( self ):
-		#Buttons
-		x,y = pygame.mouse.get_pos()
-		self.MenuButtons[4][1] = False
-		self.MenuButtons[5][1] = False
+		# Get Mouse Coords
+		tX,tY = pygame.mouse.get_pos()
 		
-		# Back Button
-		if( x > self.Screen.get_width() / 2 - self.MenuButtons[4][2].get_width() / 2 and x < self.Screen.get_width() / 2 + self.MenuButtons[4][2].get_width() / 2 ):
-			if( y > self.Screen.get_height() / 2  + self.MenuBackgroundOverlay.get_height() / 2 + 10 and y < self.Screen.get_height() /2  + self.MenuBackgroundOverlay.get_height() / 2 + self.MenuButtons[4][2].get_height() + 10 ):
-				self.MenuButtons[4][1] = True
-				if( pygame.mouse.get_pressed()[0] and self.MouseReleased):
-					self.MenuButtons[4][4](self.MenuButtons[4][0])
-					self.MouseReleased = False
+		# Check To See If Mouse is Over any Buttons
+		self.MenuButtons[4].SetMouseHover( tX, tY )
+		self.MenuButtons[5].SetMouseHover( tX, tY )
+		for check in self.CheckBoxes:
+			check.SetMouseHover( tX, tY )
 		
-		# FullScreen Checkbox
-		if( x > self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + self.FullScreen.get_width() + 30 and x < self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + self.FullScreen.get_width() + 30 + self.CheckBoxEmpty.get_width() ):
-			if( y > self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 15 and y < self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 15 + self.CheckBoxEmpty.get_height() ):
-				if( pygame.mouse.get_pressed()[0] and self.MouseReleased ):
-					self.MouseReleased = False
-					if( self.GameController.UserSettings["[Fullscreen]"] == 1 ):
-						self.GameController.UserSettings["[Fullscreen]"] = 0
-					else:
-						self.GameController.UserSettings["[Fullscreen]"] = 1
-					
-		# Screen Resolution CheckBoxes
-		if( x > self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 140 and x < self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 140 + self.CheckBoxEmpty.get_width() ):
-			if( y > self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 83 and y < self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 83 + self.CheckBoxEmpty.get_height() ):
-				if( pygame.mouse.get_pressed()[0] and self.MouseReleased ):
-					self.MouseReleased = False
-					self.GameController.UserSettings["[ScreenWidth]"] = 800
-					self.GameController.UserSettings["[ScreenHeight]"] = 600
-					
-		if( x > self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 140 and x < self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 140 + self.CheckBoxEmpty.get_width() ):
-			if( y > self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 113 and y < self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 113 + self.CheckBoxEmpty.get_height() ):
-				if( pygame.mouse.get_pressed()[0] and self.MouseReleased ):
-					self.MouseReleased = False
-					self.GameController.UserSettings["[ScreenWidth]"] = 1024
-					self.GameController.UserSettings["[ScreenHeight]"] = 768
+		# Button Press Checks
+		if( self.MenuButtons[4].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased):
+			self.MenuButtons[4].ExecuteButton()
+			self.MouseReleased = False
+			
+		if( self.MenuButtons[5].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased):
+			self.MenuButtons[5].ExecuteButton()
+			self.GameController.InitializeWindow("TowersOfHanoi")
+			self.InitializeButtons()
+			self.MouseReleased = False
 		
-		if( x > self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 140 and x < self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 140 + self.CheckBoxEmpty.get_width() ):
-			if( y > self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 143 and y < self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 143 + self.CheckBoxEmpty.get_height() ):
-				if( pygame.mouse.get_pressed()[0] and self.MouseReleased):
-					self.MouseReleased = False
-					self.GameController.UserSettings["[ScreenWidth]"] = 1280
-					self.GameController.UserSettings["[ScreenHeight]"] = 768
-					
-		if( x > self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 320 and x < self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 320 + self.CheckBoxEmpty.get_width() ):
-			if( y > self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 83 and y < self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 83 + self.CheckBoxEmpty.get_height() ):
-				if( pygame.mouse.get_pressed()[0] and self.MouseReleased ):
-					self.MouseReleased = False
-					self.GameController.UserSettings["[ScreenWidth]"] = 1360
-					self.GameController.UserSettings["[ScreenHeight]"] = 768
-					
-		if( x > self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 320 and x < self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 320 + self.CheckBoxEmpty.get_width() ):
-			if( y > self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 113 and y < self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 113 + self.CheckBoxEmpty.get_height() ):
-				if( pygame.mouse.get_pressed()[0] and self.MouseReleased ):
-					self.MouseReleased = False
-					self.GameController.UserSettings["[ScreenWidth]"] = 1366
-					self.GameController.UserSettings["[ScreenHeight]"] = 768
-		
-		if( x > self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 320 and x < self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 320 + self.CheckBoxEmpty.get_width() ):
-			if( y > self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 143 and y < self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 143 + self.CheckBoxEmpty.get_height() ):
-				if( pygame.mouse.get_pressed()[0] and self.MouseReleased ):
-					self.MouseReleased = False
-					self.GameController.UserSettings["[ScreenWidth]"] = 1600
-					self.GameController.UserSettings["[ScreenHeight]"] = 900
-
-					
-		# Save Button
-		if( x > self.Screen.get_width() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - self.MenuButtons[5][3].get_width() - 10 and x < self.Screen.get_width() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - 10 ):
-			if( y > self.Screen.get_height() /2  + self.MenuBackgroundOverlay.get_height() / 2 - self.MenuButtons[5][3].get_height() - 10 and y < self.Screen.get_height() /2  + self.MenuBackgroundOverlay.get_height() / 2 - 10 ):
-				self.MenuButtons[5][1] = True
-				if( pygame.mouse.get_pressed()[0] and self.MouseReleased ):
-					self.MouseReleased = False
-					self.MenuButtons[4][4](self.MenuButtons[4][0])
-					self.MenuButtons[5][4](self.MenuButtons[5][0])
-					self.GameController.InitializeWindow("TowersOfHanoi")
-					
+		# CheckBox Press Checks
+		if( self.CheckBoxes[0].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
+			self.MouseReleased = False
+			if( self.CheckBoxes[0].Checked ):
+				self.GameController.UserSettings['[Fullscreen]'] = 0
+				self.CheckBoxes[0].Checked = False
+			elif( not self.CheckBoxes[0].Checked ):
+				self.GameController.UserSettings['[Fullscreen]'] = 1
+				self.CheckBoxes[0].Checked = True
+				
+		resolution = str( self.GameController.UserSettings['[ScreenWidth]'] ) + 'x' + str( self.GameController.UserSettings['[ScreenHeight]'] )
+		for check in range( 6 ):
+			if( resolution == self.CheckBoxes[check+1].ButtonId ):
+				self.CheckBoxes[check+1].Checked = True
+			else:
+				self.CheckBoxes[check+1].Checked = False
+			if( self.CheckBoxes[check+1].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
+				self.MouseReleased = False
+				size = self.CheckBoxes[check+1].ButtonId.split('x')
+				self.GameController.UserSettings['[ScreenWidth]'] = int(size[0])
+				self.GameController.UserSettings['[ScreenHeight]'] = int(size[1])
+			
 	def ExecuteHighScores( self ):
 		pass
 		
@@ -186,72 +160,17 @@ class MainMenuState(State):
 	def DrawMainMenu( self ):
 		# Draw Buttons
 		for button in range( 4 ):
-			if( self.MenuButtons[button][1] ):
-				self.Screen.blit( self.MenuButtons[button][3] , ( self.Screen.get_width() / 2 - self.MenuButtons[button][3].get_width() / 2 , self.Screen.get_height() - self.MenuButtons[button][3].get_height() * (2 + button) - (button * 10) ))
-			else:
-				self.Screen.blit( self.MenuButtons[button][2] , ( self.Screen.get_width() / 2 - self.MenuButtons[button][2].get_width() / 2 , self.Screen.get_height() - self.MenuButtons[button][2].get_height() * (2 + button) - (button * 10) ))
+			self.MenuButtons[button].DrawButton( self.Screen )
 		
 	def DrawSettingsMenu( self ):
 		# Draw Background
 		self.Screen.blit( self.MenuBackgroundOverlay , ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2, self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 ))
 		
-		# Draw Save Button
-		if( self.MenuButtons[5][1] ):
-			self.Screen.blit( self.MenuButtons[5][3] , ( self.Screen.get_width() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - self.MenuButtons[5][3].get_width() - 10 , self.Screen.get_height() /2  + self.MenuBackgroundOverlay.get_height() / 2 - self.MenuButtons[5][3].get_height() - 10 ))
-		else:
-			self.Screen.blit( self.MenuButtons[5][2] , ( self.Screen.get_width() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - self.MenuButtons[5][2].get_width() - 10 , self.Screen.get_height() /2  + self.MenuBackgroundOverlay.get_height() / 2 - self.MenuButtons[5][2].get_height() - 10 ))
-					
-		# Draw Back Button
-		if( self.MenuButtons[4][1] ):
-			self.Screen.blit( self.MenuButtons[4][3] , ( self.Screen.get_width() / 2 - self.MenuButtons[4][3].get_width() / 2 , self.Screen.get_height() / 2  + self.MenuBackgroundOverlay.get_height() / 2 + 10 ))
-		else:
-			self.Screen.blit( self.MenuButtons[4][2] , ( self.Screen.get_width() / 2 - self.MenuButtons[4][2].get_width() / 2 , self.Screen.get_height() / 2  + self.MenuBackgroundOverlay.get_height() / 2 + 10 ))
-			
-		# Draw Fullscreen
-		self.Screen.blit(self.FullScreen, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 20, self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 10 ))
-		if( self.GameController.UserSettings["[Fullscreen]"] == 1 ):
-			self.Screen.blit( self.CheckBoxChecked, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + self.FullScreen.get_width() + 30 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 15 ))
-		else:
-			self.Screen.blit( self.CheckBoxEmpty, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + self.FullScreen.get_width() + 30 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 15 ))
+		self.MenuButtons[4].DrawButton( self.Screen )	# Back Button
+		self.MenuButtons[5].DrawButton( self.Screen )	# Save Button
 		
-		# Draw Resolutions
-		self.Screen.blit( self.Resolutions, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 20 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 50 ))
-		self.Screen.blit( self.Res800x600, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 20 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 80 ))
-		self.Screen.blit( self.Res1024x768, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 20 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 110 ))
-		self.Screen.blit( self.Res1280x768, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 20 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 140 ))
-		self.Screen.blit( self.Res1360x768, ( self.Screen.get_width() / 2 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 80 ))
-		self.Screen.blit( self.Res1366x768, ( self.Screen.get_width() / 2 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 110 ))
-		self.Screen.blit( self.Res1600x900, ( self.Screen.get_width() / 2 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 140 ))
-		
-		if( self.GameController.UserSettings['[ScreenWidth]'] == 800 ):
-			self.Screen.blit( self.CheckBoxChecked, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 140 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 83 ))
-		else:
-			self.Screen.blit( self.CheckBoxEmpty, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 140 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 83 ))
-		
-		if(self.GameController.UserSettings['[ScreenWidth]'] == 1024 ):
-			self.Screen.blit( self.CheckBoxChecked, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 140 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 113 ))
-		else:
-			self.Screen.blit( self.CheckBoxEmpty, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 140 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 113 ))
-		
-		if( self.GameController.UserSettings['[ScreenWidth]'] == 1280 ):
-			self.Screen.blit(self.CheckBoxChecked, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 140 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 143 ))
-		else:
-			self.Screen.blit(self.CheckBoxEmpty, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 140 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 143 ))
-
-		if( self.GameController.UserSettings['[ScreenWidth]'] == 1360 ):
-			self.Screen.blit( self.CheckBoxChecked, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 320 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 83 ))
-		else:
-			self.Screen.blit( self.CheckBoxEmpty, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 320 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 83 ))
-
-		if( self.GameController.UserSettings['[ScreenWidth]'] == 1366 ):
-			self.Screen.blit( self.CheckBoxChecked, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 320 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 113 ))
-		else:
-			self.Screen.blit( self.CheckBoxEmpty, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 320 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 113 ))
-
-		if(self.GameController.UserSettings['[ScreenWidth]'] == 1600):
-			self.Screen.blit( self.CheckBoxChecked, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 320 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 143 ))
-		else:
-			self.Screen.blit( self.CheckBoxEmpty, ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 320 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 143 ))
+		for checkbox in self.CheckBoxes:
+			checkbox.DrawButton( self.Screen )
 		
 	def DrawHighScores( self ):
 		pass
