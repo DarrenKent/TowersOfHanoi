@@ -45,6 +45,7 @@ class MainMenuState( State ):
 			self.MenuButtons.append(tNewButton)
 		self.MenuButtons.append(Button.Button( self.Screen.get_width() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - 160 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_height() / 2 - 60, 'back' , 'button_back_standard.png' , 'button_back_hover.png' , self.ButtonHandler ))
 		self.MenuButtons.append(Button.Button( self.Screen.get_width() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - 320 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_height() / 2 - 60, 'save' , 'button_save_standard.png' , 'button_save_hover.png' , self.ButtonHandler ))
+		self.MenuButtons.append(Button.Button( self.Screen.get_width() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - 160 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_height() / 2 - 120, 'default' , 'button_default_standard.png' , 'button_default_hover.png' , self.ButtonHandler ))
 		
 		self.CheckBoxes = []
 		Checks = [ 'Fullscreen:' , '800x600' , '1024x768' , '1280x768' , '1360x768' , '1366x768' , '1600x900' ]
@@ -115,19 +116,22 @@ class MainMenuState( State ):
 		# Check To See If Mouse is Over any Buttons
 		self.MenuButtons[4].SetMouseHover( tX, tY )
 		self.MenuButtons[5].SetMouseHover( tX, tY )
+		self.MenuButtons[6].SetMouseHover( tX, tY )
 		for check in self.CheckBoxes:
 			check.SetMouseHover( tX, tY )
 		
 		# Button Press Checks
 		if( self.MenuButtons[4].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased):
-			self.MenuButtons[4].ExecuteButton()
 			self.MouseReleased = False
+			self.MenuButtons[4].ExecuteButton()
 			
 		if( self.MenuButtons[5].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased):
-			self.MenuButtons[5].ExecuteButton()
-			self.GameController.InitializeWindow("TowersOfHanoi")
-			self.InitializeButtons()
 			self.MouseReleased = False
+			self.MenuButtons[5].ExecuteButton()
+			
+		if( self.MenuButtons[6].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased):
+			self.MouseReleased = False
+			self.MenuButtons[6].ExecuteButton()
 		
 		# CheckBox Press Checks
 		if( self.CheckBoxes[0].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
@@ -168,6 +172,7 @@ class MainMenuState( State ):
 		
 		self.MenuButtons[4].DrawButton( self.Screen )	# Back Button
 		self.MenuButtons[5].DrawButton( self.Screen )	# Save Button
+		self.MenuButtons[6].DrawButton( self.Screen )	# Default Button
 		
 		for checkbox in self.CheckBoxes:
 			checkbox.DrawButton( self.Screen )
@@ -180,8 +185,15 @@ class MainMenuState( State ):
 		
 	## Button Handlers
 	def ButtonHandler( self , button ):
-		if( button == 'save' ):
+		if( button == 'default'):
+			self.GameController.ReadUserSettings(True)
 			self.GameController.WriteUserSettings()
+			self.GameController.InitializeWindow("TowersOfHanoi")
+			self.InitializeButtons()
+		elif( button == 'save' ):
+			self.GameController.WriteUserSettings()
+			self.GameController.InitializeWindow("TowersOfHanoi")
+			self.InitializeButtons()
 		elif( button == 'back' ):
 			self.CurrentMenu = self.MenuStates[0]
 		elif( button == 'quit' ):
