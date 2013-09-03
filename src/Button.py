@@ -35,7 +35,7 @@ class Button:
 		self.Hover = False
 		
 	def ExecuteButton( self ):
-		self.ButtonHandler( self.ButtonId )
+		self.ButtonHandler( self )
 		
 	def DrawButton( self , screen ):
 		if( self.Hover ):

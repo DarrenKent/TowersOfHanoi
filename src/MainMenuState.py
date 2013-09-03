@@ -25,6 +25,7 @@ class MainMenuState( State ):
 		self.CurrentMenu = self.MenuStates[0]
 		self.MouseReleased = True
 		self.GameController = gamecontroller
+		self.StartSlider = False
 		
 		# Background Images
 		self.Background = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'jungle_background.png' ))
@@ -33,8 +34,18 @@ class MainMenuState( State ):
 		self.MenuBackgroundOverlay = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'background_overlay.png' ))
 		
 		self.InitializeButtons()
+		
+	def PlayBGMusic( self ):
+		pygame.mixer.music.load( os.path.join( os.path.join( 'data' , 'music' ) , "MasalaMadness(Pad).mp3" ))
+		pygame.mixer.music.set_volume(self.GameController.UserSettings["[MusicVolume]"]/100.0)
+		pygame.mixer.music.play(-1)
 
 	def InitializeButtons( self ):
+		self.Text = pygame.font.SysFont( "times", 24 , True , False )
+		self.SFXVolumeText = self.Text.render( "SFX Volume" , 1 , (255,255,255) )
+		self.MusicVolumeText = self.Text.render( "Music Volume" , 1 , (255,255,255) )
+		
+		self.SliderBar = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'slider_bar.png' ))
 		self.CheckBoxEmpty = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'checkbox_unchecked.png' ))
 		self.CheckBoxChecked = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures') , 'checkbox_checked.png' ))
 		
@@ -46,13 +57,15 @@ class MainMenuState( State ):
 		self.MenuButtons.append(Button.Button( self.Screen.get_width() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - 160 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_height() / 2 - 60, 'back' , 'button_back_standard.png' , 'button_back_hover.png' , self.ButtonHandler ))
 		self.MenuButtons.append(Button.Button( self.Screen.get_width() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - 320 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_height() / 2 - 60, 'save' , 'button_save_standard.png' , 'button_save_hover.png' , self.ButtonHandler ))
 		self.MenuButtons.append(Button.Button( self.Screen.get_width() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - 160 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_height() / 2 - 120, 'default' , 'button_default_standard.png' , 'button_default_hover.png' , self.ButtonHandler ))
+		self.MenuButtons.append(Button.Button( self.Screen.get_width() / 2 + self.GameController.UserSettings["[MusicVolume]"] - 4, self.Screen.get_height() / 2 + self.MusicVolumeText.get_height() / 2 - 7 , 'Music' , 'button_slider_standard.png' , 'button_slider_hover.png' , self.SliderHandler ))
+		self.MenuButtons.append(Button.Button( self.Screen.get_width() / 2 + self.GameController.UserSettings["[SFXVolume]"] - 4, self.Screen.get_height() / 2 + self.SFXVolumeText.get_height() / 2 + 23 , 'SFX' , 'button_slider_standard.png' , 'button_slider_hover.png' , self.SliderHandler ))
 		
 		self.CheckBoxes = []
 		Checks = [ 'Fullscreen:' , '800x600' , '1024x768' , '1280x768' , '1360x768' , '1366x768' , '1600x900' ]
 		
 		columns = [ self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 30 , self.Screen.get_width() / 2 ]
 		
-		self.Text = pygame.font.SysFont( "times", 24 , True , False )
+		
 		Fullscreen = CheckBox.CheckBox( columns[0] , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 30 , Checks[0] , Checks[0] , self.Text )
 		if( self.GameController.UserSettings['[Fullscreen]'] == 1 ):
 			Fullscreen.Checked = True
@@ -66,11 +79,17 @@ class MainMenuState( State ):
 					tCheckBox.Checked = True
 				self.CheckBoxes.append(tCheckBox)
 				count += 1
+				
+		
 		
 	def ExecuteStateLogic( self , KeysHeld , KeysPressed , clock ):
+		if( not pygame.mixer.music.get_busy() ):
+			self.PlayBGMusic()
+			
 		# Reset Mouse
 		if( not pygame.mouse.get_pressed()[0] ):
 			self.MouseReleased = True
+			self.StartSlider = False
 		
 		# Execute Proper Menu Logic
 		if( self.CurrentMenu == self.MenuStates[0] ):
@@ -113,25 +132,31 @@ class MainMenuState( State ):
 		# Get Mouse Coords
 		tX,tY = pygame.mouse.get_pos()
 		
+		
 		# Check To See If Mouse is Over any Buttons
 		self.MenuButtons[4].SetMouseHover( tX, tY )
 		self.MenuButtons[5].SetMouseHover( tX, tY )
 		self.MenuButtons[6].SetMouseHover( tX, tY )
+		self.MenuButtons[7].SetMouseHover( tX, tY )
+		self.MenuButtons[8].SetMouseHover( tX, tY )
 		for check in self.CheckBoxes:
 			check.SetMouseHover( tX, tY )
 		
 		# Button Press Checks
-		if( self.MenuButtons[4].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased):
-			self.MouseReleased = False
+		if( self.MenuButtons[4].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
 			self.MenuButtons[4].ExecuteButton()
 			
-		if( self.MenuButtons[5].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased):
-			self.MouseReleased = False
+		if( self.MenuButtons[5].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
 			self.MenuButtons[5].ExecuteButton()
 			
-		if( self.MenuButtons[6].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased):
-			self.MouseReleased = False
+		if( self.MenuButtons[6].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
 			self.MenuButtons[6].ExecuteButton()
+			
+		if( self.MenuButtons[6].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
+			self.MenuButtons[6].ExecuteButton()
+			
+		self.MenuButtons[7].ExecuteButton()
+		self.MenuButtons[8].ExecuteButton()
 		
 		# CheckBox Press Checks
 		if( self.CheckBoxes[0].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
@@ -170,12 +195,25 @@ class MainMenuState( State ):
 		# Draw Background
 		self.Screen.blit( self.MenuBackgroundOverlay , ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2, self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 ))
 		
+		# Draw Sliders
+		self.Screen.blit( self.MusicVolumeText , ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 30 , self.Screen.get_height() / 2 ))
+		self.Screen.blit( self.SFXVolumeText , ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 30 , self.Screen.get_height() / 2 + 30 ))
+		
+		self.Screen.blit( self.SliderBar , ( self.Screen.get_width() / 2 , self.Screen.get_height() / 2 + self.MusicVolumeText.get_height() / 2 ))
+		self.Screen.blit( self.SliderBar , ( self.Screen.get_width() / 2 , self.Screen.get_height() / 2 + self.SFXVolumeText.get_height() / 2 + 30))
+		
+		# Draw Buttons
 		self.MenuButtons[4].DrawButton( self.Screen )	# Back Button
 		self.MenuButtons[5].DrawButton( self.Screen )	# Save Button
 		self.MenuButtons[6].DrawButton( self.Screen )	# Default Button
+		self.MenuButtons[7].DrawButton( self.Screen )	# Music Slider
+		self.MenuButtons[8].DrawButton( self.Screen )	# SFX Slider
 		
+		# Draw CheckBoxes
 		for checkbox in self.CheckBoxes:
 			checkbox.DrawButton( self.Screen )
+			
+		
 		
 	def DrawHighScores( self ):
 		pass
@@ -185,23 +223,42 @@ class MainMenuState( State ):
 		
 	## Button Handlers
 	def ButtonHandler( self , button ):
-		if( button == 'default'):
+		self.MouseReleased = False
+		if( button.ButtonId == 'default'):
 			self.GameController.ReadUserSettings(True)
 			self.GameController.WriteUserSettings()
 			self.GameController.InitializeWindow("TowersOfHanoi")
 			self.InitializeButtons()
-		elif( button == 'save' ):
+		elif( button.ButtonId == 'save' ):
 			self.GameController.WriteUserSettings()
 			self.GameController.InitializeWindow("TowersOfHanoi")
 			self.InitializeButtons()
-		elif( button == 'back' ):
+		elif( button.ButtonId == 'back' ):
 			self.CurrentMenu = self.MenuStates[0]
-		elif( button == 'quit' ):
+		elif( button.ButtonId == 'quit' ):
 			self.StateQuit = True
-		elif( button == 'settings' ):
+		elif( button.ButtonId == 'settings' ):
 			self.CurrentMenu = self.MenuStates[1]
-		elif( button == 'highscores' ):
+		elif( button.ButtonId == 'highscores' ):
 			self.CurrentMenu = self.MenuStates[2]
-		elif( button == 'play' ):
+		elif( button.ButtonId == 'play' ):
 			self.CurrentMenu = self.MenuStates[3]
+			
+	def SliderHandler( self , button ):
+		tX , tY = pygame.mouse.get_pos()
+		if( button.IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
+			self.StartSlider = button.ButtonId
+			self.MouseReleased = False
+		elif( self.StartSlider == button.ButtonId and pygame.mouse.get_pressed()[0] and not self.MouseReleased ):
+			if( tX - self.Screen.get_width() / 2 <= 0 ):
+				button.X = self.Screen.get_width() / 2 - 4
+				self.GameController.UserSettings["["+button.ButtonId+"Volume]"] = 0
+			elif( tX - self.Screen.get_width() / 2 >= 100 ):
+				button.X = self.Screen.get_width() / 2 + 96
+				self.GameController.UserSettings["["+button.ButtonId+"Volume]"] = 100
+			else:
+				button.X = tX - 4
+				self.GameController.UserSettings["["+button.ButtonId+"Volume]"] = tX - self.Screen.get_width() / 2
+		if(button.ButtonId == "Music"):
+			pygame.mixer.music.set_volume( self.GameController.UserSettings["[MusicVolume]"] / 100.0 )
 			

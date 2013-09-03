@@ -29,6 +29,7 @@ class GameController:
 		self.InitializeWindow( name )
 		
 		pygame.init()
+		pygame.mixer.init()
 	
 	def InitializeWindow( self , name ):
 		if( self.UserSettings['[Fullscreen]'] == 1 ):
