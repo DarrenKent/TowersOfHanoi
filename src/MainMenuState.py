@@ -29,6 +29,7 @@ class MainMenuState( State ):
 		
 		# Background Images
 		self.Background = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'jungle_background.png' ))
+		self.Logo = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'logo.png' ))
 		self.LeftOverlay = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'jungle_left.png' ))
 		self.RightOverlay = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'jungle_right.png' ))
 		self.MenuBackgroundOverlay = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'background_overlay.png' ))
@@ -132,7 +133,6 @@ class MainMenuState( State ):
 		# Get Mouse Coords
 		tX,tY = pygame.mouse.get_pos()
 		
-		
 		# Check To See If Mouse is Over any Buttons
 		self.MenuButtons[4].SetMouseHover( tX, tY )
 		self.MenuButtons[5].SetMouseHover( tX, tY )
@@ -143,17 +143,9 @@ class MainMenuState( State ):
 			check.SetMouseHover( tX, tY )
 		
 		# Button Press Checks
-		if( self.MenuButtons[4].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
-			self.MenuButtons[4].ExecuteButton()
-			
-		if( self.MenuButtons[5].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
-			self.MenuButtons[5].ExecuteButton()
-			
-		if( self.MenuButtons[6].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
-			self.MenuButtons[6].ExecuteButton()
-			
-		if( self.MenuButtons[6].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
-			self.MenuButtons[6].ExecuteButton()
+		for button in range( 4 ):
+			if( self.MenuButtons[button+4].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
+				self.MenuButtons[button+4].ExecuteButton()
 			
 		self.MenuButtons[7].ExecuteButton()
 		self.MenuButtons[8].ExecuteButton()
@@ -181,12 +173,20 @@ class MainMenuState( State ):
 				self.GameController.UserSettings['[ScreenHeight]'] = int(size[1])
 			
 	def ExecuteHighScores( self ):
-		pass
+		# Get Mouse Coords
+		tX,tY = pygame.mouse.get_pos()
+		
+		# Check To See If Mouse is Over any Buttons
+		self.MenuButtons[4].SetMouseHover( tX, tY )
+		
+		if( self.MenuButtons[4].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
+			self.MenuButtons[4].ExecuteButton()
 		
 	def ExecutePlayMenu( self ):
 		pass
 		
 	def DrawMainMenu( self ):
+		self.Screen.blit( self.Logo , ( self.Screen.get_width() / 2 - self.Logo.get_width() / 2 , self.Screen.get_height() / 2 - self.Logo.get_height()))
 		# Draw Buttons
 		for button in range( 4 ):
 			self.MenuButtons[button].DrawButton( self.Screen )
@@ -216,7 +216,11 @@ class MainMenuState( State ):
 		
 		
 	def DrawHighScores( self ):
-		pass
+		# Draw Background
+		self.Screen.blit( self.MenuBackgroundOverlay , ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2, self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 ))
+		
+		# Draw Buttons
+		self.MenuButtons[4].DrawButton( self.Screen )	# Back Button
 		
 	def DrawPlayMenu( self ):
 		pass
