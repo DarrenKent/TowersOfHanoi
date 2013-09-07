@@ -17,9 +17,7 @@ class TowersOfHanoi( GameController ):
 	def __init__( self ):
 		GameController.__init__( self , 'Towers Of Hanoi')
 		self.StateMgr = StateManager.StateManager( self.Screen , self)
-		self.HighScores = []
-		
-		self.RetrieveHighScores( False )
+		self.HighScores = {}
 		
 	def GameLogic( self ):
 		if( self.StateMgr.CurrentState == 'QuitState' ):
@@ -58,7 +56,5 @@ class TowersOfHanoi( GameController ):
 				name = scores[2]
 			self.HighScores[scores[0]] = ( score , name )
 			line = file.readline()
-			
-		print self.HighScores
 			
 		file.close()

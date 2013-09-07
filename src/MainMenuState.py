@@ -14,6 +14,7 @@ import pygame
 from State import *
 import Button
 import CheckBox
+import Arrow
 
 class MainMenuState( State ):
 	def __init__( self , screen , gamecontroller ):
@@ -26,6 +27,7 @@ class MainMenuState( State ):
 		self.MouseReleased = True
 		self.GameController = gamecontroller
 		self.StartSlider = False
+		self.ScoresPage = 1
 		
 		# Background Images
 		self.Background = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'jungle_background.png' ))
@@ -60,6 +62,10 @@ class MainMenuState( State ):
 		self.MenuButtons.append(Button.Button( self.Screen.get_width() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - 160 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_height() / 2 - 120, 'default' , 'button_default_standard.png' , 'button_default_hover.png' , self.ButtonHandler ))
 		self.MenuButtons.append(Button.Button( self.Screen.get_width() / 2 + self.GameController.UserSettings["[MusicVolume]"] - 4, self.Screen.get_height() / 2 + self.MusicVolumeText.get_height() / 2 - 7 , 'Music' , 'button_slider_standard.png' , 'button_slider_hover.png' , self.SliderHandler ))
 		self.MenuButtons.append(Button.Button( self.Screen.get_width() / 2 + self.GameController.UserSettings["[SFXVolume]"] - 4, self.Screen.get_height() / 2 + self.SFXVolumeText.get_height() / 2 + 23 , 'SFX' , 'button_slider_standard.png' , 'button_slider_hover.png' , self.SliderHandler ))
+		
+		self.Arrows = []
+		self.Arrows.append(Arrow.Arrow( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 30 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_height() / 2 - 50 , 'ScoresLeft' , 'arrow_left_standard.png' , 'arrow_left_hover.png' , 'arrow_left_gray.png' , self.ArrowHandler ))
+		self.Arrows.append(Arrow.Arrow( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 70 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_height() / 2 - 50 , 'ScoresRight' , 'arrow_right_standard.png' , 'arrow_right_hover.png' , 'arrow_right_gray.png' , self.ArrowHandler ))
 		
 		self.CheckBoxes = []
 		Checks = [ 'Fullscreen:' , '800x600' , '1024x768' , '1280x768' , '1360x768' , '1366x768' , '1600x900' ]
@@ -178,9 +184,27 @@ class MainMenuState( State ):
 		
 		# Check To See If Mouse is Over any Buttons
 		self.MenuButtons[4].SetMouseHover( tX, tY )
+		self.Arrows[0].SetMouseHover( tX, tY )
+		self.Arrows[1].SetMouseHover( tX, tY )
 		
 		if( self.MenuButtons[4].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
 			self.MenuButtons[4].ExecuteButton()
+			
+		if( self.Arrows[0].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased and self.ScoresPage != 1):
+			self.Arrows[0].ExecuteButton()
+			
+		if( self.Arrows[1].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased and self.ScoresPage != 6):
+			self.Arrows[1].ExecuteButton()
+			
+		if( self.ScoresPage == 1 ):
+			self.Arrows[0].Gray = True
+		else:
+			self.Arrows[0].Gray = False
+			
+		if( self.ScoresPage == 6 ):
+			self.Arrows[1].Gray = True
+		else:
+			self.Arrows[1].Gray = False
 		
 	def ExecutePlayMenu( self ):
 		pass
@@ -222,6 +246,19 @@ class MainMenuState( State ):
 		# Draw Buttons
 		self.MenuButtons[4].DrawButton( self.Screen )	# Back Button
 		
+		tScoreTitle = self.Text.render( "Fastest Times: " + str(self.ScoresPage+2) + " Disks" , 1 , (255,255,255) )
+		self.Screen.blit ( tScoreTitle , ( self.Screen.get_width()  / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 30 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 20 ))
+		for score in range( 10 ):
+			tPlaceText = self.Text.render( str( score + 1 ) + ":" , 1 , (255,255,255) )
+			self.Screen.blit( tPlaceText , ( self.Screen.get_width()  / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 30 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 25 * ( score + 3 ) ))
+			tPlayerText = self.Text.render( self.GameController.HighScores['['+str(self.ScoresPage+2)+'-'+str(score+1)+']'][1] , 1 , (255,255,255) )
+			self.Screen.blit( tPlayerText , ( self.Screen.get_width()  / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 80 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 25 * ( score + 3 ) ))
+			tScoreText = self.Text.render( self.GameController.HighScores['['+str(self.ScoresPage+2)+'-'+str(score+1)+']'][0] , 1 , (255,255,255) )
+			self.Screen.blit( tScoreText , ( self.Screen.get_width()  / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 180 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 25 * ( score + 3 ) ))
+		
+		self.Arrows[0].DrawButton( self.Screen )
+		self.Arrows[1].DrawButton( self.Screen )
+		
 	def DrawPlayMenu( self ):
 		pass
 		
@@ -245,6 +282,7 @@ class MainMenuState( State ):
 			self.CurrentMenu = self.MenuStates[1]
 		elif( button.ButtonId == 'highscores' ):
 			self.CurrentMenu = self.MenuStates[2]
+			self.GameController.RetrieveHighScores( False )
 		elif( button.ButtonId == 'play' ):
 			self.CurrentMenu = self.MenuStates[3]
 			
@@ -265,4 +303,16 @@ class MainMenuState( State ):
 				self.GameController.UserSettings["["+button.ButtonId+"Volume]"] = tX - self.Screen.get_width() / 2
 		if(button.ButtonId == "Music"):
 			pygame.mixer.music.set_volume( self.GameController.UserSettings["[MusicVolume]"] / 100.0 )
+			
+	def ArrowHandler( self , button ):
+		self.MouseReleased = False
+		if( button.ButtonId == 'ScoresLeft' ):
+			self.ScoresPage -= 1
+		elif( button.ButtonId == 'ScoresRight' ):
+			self.ScoresPage += 1
+			
+		if( self.ScoresPage < 1 ):
+			self.ScoresPage = 1
+		if( self.ScoresPage > 6 ):
+			self.ScoresPage = 6
 			
