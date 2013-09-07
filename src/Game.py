@@ -17,6 +17,9 @@ class TowersOfHanoi( GameController ):
 	def __init__( self ):
 		GameController.__init__( self , 'Towers Of Hanoi')
 		self.StateMgr = StateManager.StateManager( self.Screen , self)
+		self.HighScores = []
+		
+		self.RetrieveHighScores( False )
 		
 	def GameLogic( self ):
 		if( self.StateMgr.CurrentState == 'QuitState' ):
@@ -31,3 +34,31 @@ class TowersOfHanoi( GameController ):
 			
 	def DrawScreen( self ):
 		self.StateMgr.DrawCurrentState( self.Screen , self.Clock )
+		
+	def RetrieveHighScores( self , reset ):
+		# Clear current High Scores
+		self.HighScores = {}
+
+		# Open Correct Settings
+		if not reset:
+			file = open( 'user/pscores.cfg' , 'r' )
+		else:
+			file = open( 'src/dscores.cfg' , 'r' )
+			
+		# Read through each line and store the settings
+		line = file.readline()
+		while( line ):
+			if line == '':
+				break
+
+			scores = line.split()
+			score = scores[1]
+			name = ""
+			if( len( scores ) > 2 ):
+				name = scores[2]
+			self.HighScores[scores[0]] = ( score , name )
+			line = file.readline()
+			
+		print self.HighScores
+			
+		file.close()
