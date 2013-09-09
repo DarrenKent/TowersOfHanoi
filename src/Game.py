@@ -29,6 +29,8 @@ class TowersOfHanoi( GameController ):
 				self.StateMgr.SetState( 'MainMenuState' )
 			if( self.StateMgr.CurrentState == 'MainMenuState' and self.StateMgr.GetCurrentState().StateQuit ):
 				self.StateMgr.SetState( 'QuitState' )
+			if( self.StateMgr.CurrentState == 'PlayState' and self.StateMgr.GetCurrentState().StateQuit ):
+				self.StateMgr.SetState( 'MainMenuState' )
 			
 	def DrawScreen( self ):
 		self.StateMgr.DrawCurrentState( self.Screen , self.Clock )

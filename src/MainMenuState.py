@@ -15,6 +15,7 @@ from State import *
 import Button
 import CheckBox
 import Arrow
+import PlayState
 
 class MainMenuState( State ):
 	def __init__( self , screen , gamecontroller ):
@@ -36,6 +37,8 @@ class MainMenuState( State ):
 		self.LeftOverlay = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'jungle_left.png' ))
 		self.RightOverlay = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'jungle_right.png' ))
 		self.MenuBackgroundOverlay = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'background_overlay.png' ))
+		self.LeftForground = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'jungle_left_forground.png' ))
+		self.RightForground = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'jungle_right_forground.png' ))
 		
 		self.InitializeButtons()
 		
@@ -122,6 +125,8 @@ class MainMenuState( State ):
 			screen.blit( self.Background , ( tile * self.Background.get_width() , screen.get_height() - self.Background.get_height() ))
 		screen.blit( self.LeftOverlay , ( 0 , screen.get_height() - self.LeftOverlay.get_height() ))
 		screen.blit( self.RightOverlay , ( screen.get_width() - self.RightOverlay.get_width() , screen.get_height() - self.RightOverlay.get_height() ))
+		screen.blit( self.LeftForground , ( 0 , screen.get_height() - self.LeftForground.get_height() ))
+		screen.blit( self.RightForground , ( screen.get_width() - self.RightForground.get_width() , screen.get_height() - self.RightForground.get_height() ))
 		
 		if( self.CurrentMenu == self.MenuStates[0] ):
 			self.DrawMainMenu()
@@ -335,6 +340,10 @@ class MainMenuState( State ):
 			self.GameController.RetrieveHighScores( False )
 		elif( button.ButtonId == 'play' ):
 			self.CurrentMenu = self.MenuStates[3]
+		elif( button.ButtonId == 'GamePlay' ):
+			self.GameController.StateMgr.AddState( 'PlayState' , PlayState.PlayState( self.Screen , self.GameController , self.NumDisks ))
+			self.GameController.StateMgr.SetState( 'PlayState' )
+			pygame.mixer.music.stop()
 			
 	def SliderHandler( self , button ):
 		tX , tY = pygame.mouse.get_pos()
