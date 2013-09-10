@@ -24,6 +24,8 @@ class PlayState( State ):
 		self.Pause = False
 		self.Countdown = True
 		self.StartTime = time.time()
+		self.StartPause = 0
+		self.TimePaused = 0
 		
 		# Initialize Background Images
 		self.Background = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , self.Texture+'_background.png' ))
@@ -88,11 +90,13 @@ class PlayState( State ):
 		
 		self.Buttons[0].DrawButton( self.Screen )
 		
-		timer = self.Text.render( str(time.time() - self.StartTime) , 1 , (255,255,255) )
-		self.Screen.blit( timer , ( 10 , 10) ) 
-		
 		if( self.Pause ):
 			self.DrawPauseMenu()
+			timer = self.Text.render( "PAUSED" , 1 , (255,255,255) )
+			self.Screen.blit( timer , ( 10 , 10) )
+		else:
+			timer = self.Text.render( "Time: %.2f" % (time.time() - self.StartTime - self.TimePaused) , 1 , (255,255,255) )
+			self.Screen.blit( timer , ( 10 , 10) ) 
 			
 	def DrawPauseMenu( self ):
 		rect = pygame.Surface( ( self.Screen.get_width() , self.Screen.get_height() ) , pygame.SRCALPHA , 32 )
@@ -106,7 +110,9 @@ class PlayState( State ):
 		self.MouseReleased = False
 		if( button.ButtonId == 'Menu' ):
 			self.Pause = True
+			self.StartPause = time.time()
 		elif( button.ButtonId == 'Resume' ):
 			self.Pause = False
+			self.TimePaused += time.time() - self.StartPause
 		elif( button.ButtonId == 'Quit' ):
 			self.StateQuit = True
