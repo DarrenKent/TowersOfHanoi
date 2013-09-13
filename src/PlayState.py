@@ -115,6 +115,27 @@ class PlayState( State ):
 		if( self.Towers[2] == self.NumDisks ):
 			self.WinTime = time.time() - self.StartTime - self.TimePaused
 			self.Win = True
+			self.GameController.RetrieveHighScores( False )
+			tAddScore = False
+			tLastScore = 0
+			tLastPlayer = 0
+			for score in range( 10 ):
+				tScore = self.GameController.HighScores["["+str(self.NumDisks)+"-"+str(score+1)+"]"]
+				tScoreValue = eval(tScore[0])
+				if( not tAddScore and ((tScoreValue != 0 and self.WinTime < tScoreValue) or tScoreValue == 0) ):
+					print "working"
+					tAddScore = True
+					tLastScore = str(self.WinTime)
+					tLastPlayer = "ABC"
+				if( tAddScore ):
+					tThisScore = tLastScore
+					tThisPlayer = tLastPlayer
+					tLastScore = tScore[0]
+					tLastPlayer = tScore[1]
+					tNewScore = (tThisScore,tThisPlayer)
+					self.GameController.HighScores["["+str(self.NumDisks)+"-"+str(score+1)+"]"] = tNewScore
+			if( tAddScore):
+				self.GameController.WriteHighScores()
 
 	def DrawStateFrame( self , screen , clock ):
 		screen.fill( (0,253,251) )

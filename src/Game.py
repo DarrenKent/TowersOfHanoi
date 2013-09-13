@@ -60,3 +60,9 @@ class TowersOfHanoi( GameController ):
 			line = file.readline()
 			
 		file.close()
+		
+	def WriteHighScores( self ):
+		file = open( 'user/pscores.cfg' , 'w')
+		for score in self.HighScores:
+			file.write(score+" %.2f %s\n" % (eval(self.HighScores[score][0]) , str(self.HighScores[score][1])))
+		file.close()

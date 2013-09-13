@@ -41,7 +41,7 @@ class Disk ( Button.Button ):
 		
 	def SetLocation( self , colPlacement , rowPlacement ):
 		tX , tY = pygame.mouse.get_pos()
-		newColumn = 0
+		newColumn = -1
 		if( tX > self.Screen.get_width() / 2 - 236 - 117 and tX < self.Screen.get_width() / 2 - 236 + 117 ):
 			newColumn = 0
 			newX = self.Screen.get_width() / 2 - 236 - self.DiskImage.get_width() / 2
@@ -52,7 +52,7 @@ class Disk ( Button.Button ):
 			newColumn = 2
 			newX = self.Screen.get_width() / 2 + 236 - self.DiskImage.get_width() / 2
 			
-		if( len(rowPlacement[newColumn]) == 0 or self.ButtonId < min(rowPlacement[newColumn])):
+		if( newColumn != -1 and (len(rowPlacement[newColumn]) == 0 or self.ButtonId < min(rowPlacement[newColumn]))):
 			self.Column = newColumn
 			self.Row = colPlacement[self.Column]+1
 			self.X = newX
