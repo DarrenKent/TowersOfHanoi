@@ -117,6 +117,17 @@ class PlayState( State ):
 			self.GameController.WriteHighScores()
 			self.Buttons[2].ExecuteButton()
 			
+		if( pygame.K_LEFT in self.GameController.KeyPressed ):
+			self.CursorLoc -= 1
+			if( self.CursorLoc < 0 ):
+				self.CursorLoc = 0
+		elif( pygame.K_RIGHT in self.GameController.KeyPressed ):
+			self.CursorLoc += 1
+			if( self.CursorLoc > 2):
+				self.CursorLoc = 2
+
+		print self.GameController.KeyPressed
+			
 	def CheckForWin( self ):
 		if( self.Towers[2] == self.NumDisks ):
 			self.WinTime = time.time() - self.StartTime - self.TimePaused
@@ -192,15 +203,20 @@ class PlayState( State ):
 			highScoreText = self.Text.render( "New High Score! Your Place: "+str(self.Rank) , 1 , (255,255,255) )
 			self.Screen.blit( highScoreText , ( self.Screen.get_width() / 2 - highScoreText.get_width() / 2 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 100 ))
 			string = ""
+			selector = ""
 			for char in range(3):
 				if( self.CursorLoc == char):
 					if( int(time.time()) % 2 == 0 ):
-						string += "| "
+						string += "|"
 					else:
 						string += " "
-				string += self.PlayerName[char]+" "
+				else:
+					string += " "
+				string += self.PlayerName[char]
 			playerString = self.Text.render( string , 1 , (255,255,255) )
+			selectorText = self.Text.render( selector , 1 , (255,255,255) )
 			self.Screen.blit( playerString , ( self.Screen.get_width() / 2 - playerString.get_width() / 2 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 140 ))
+			self.Screen.blit( selectorText , ( self.Screen.get_width() / 2 - selectorText.get_width() / 2 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 140 ))
 			
 	def ButtonHandler( self , button ):
 		self.MouseReleased = False
