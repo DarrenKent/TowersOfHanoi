@@ -22,6 +22,7 @@ class PlayState( State ):
 		self.Screen = screen
 		self.NumDisks = numDisks
 		self.GameController = gameController
+		self.GameController.RetrieveHighScores( False )
 		self.Texture = 'jungle'
 		self.Pause = False
 		self.Countdown = True
@@ -33,6 +34,10 @@ class PlayState( State ):
 		self.Disks = []
 		self.WinTime = 0
 		self.Win = False
+		self.Rank = -1
+		self.PlayerName = ["_","_","_"]
+		self.CursorLoc = 0
+		self.NewHighScore = False
 		for disk in range( numDisks ):
 			tNewDisk = Disk.Disk( disk , numDisks - disk , 0 , "disk_"+str(disk+1)+"_red.png" , screen , self.DiskHandler )
 			self.Disks.append( tNewDisk )
@@ -109,13 +114,13 @@ class PlayState( State ):
 		tX , tY = pygame.mouse.get_pos()
 		self.Buttons[2].SetMouseHover( tX , tY )
 		if( self.Buttons[2].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
+			self.GameController.WriteHighScores()
 			self.Buttons[2].ExecuteButton()
 			
 	def CheckForWin( self ):
 		if( self.Towers[2] == self.NumDisks ):
 			self.WinTime = time.time() - self.StartTime - self.TimePaused
 			self.Win = True
-			self.GameController.RetrieveHighScores( False )
 			tAddScore = False
 			tLastScore = 0
 			tLastPlayer = 0
@@ -123,10 +128,11 @@ class PlayState( State ):
 				tScore = self.GameController.HighScores["["+str(self.NumDisks)+"-"+str(score+1)+"]"]
 				tScoreValue = eval(tScore[0])
 				if( not tAddScore and ((tScoreValue != 0 and self.WinTime < tScoreValue) or tScoreValue == 0) ):
-					print "working"
 					tAddScore = True
 					tLastScore = str(self.WinTime)
-					tLastPlayer = "ABC"
+					tLastPlayer = ""
+					self.Rank = score+1
+					self.NewHighScore = True
 				if( tAddScore ):
 					tThisScore = tLastScore
 					tThisPlayer = tLastPlayer
@@ -134,8 +140,6 @@ class PlayState( State ):
 					tLastPlayer = tScore[1]
 					tNewScore = (tThisScore,tThisPlayer)
 					self.GameController.HighScores["["+str(self.NumDisks)+"-"+str(score+1)+"]"] = tNewScore
-			if( tAddScore):
-				self.GameController.WriteHighScores()
 
 	def DrawStateFrame( self , screen , clock ):
 		screen.fill( (0,253,251) )
@@ -164,8 +168,6 @@ class PlayState( State ):
 			timer = self.Text.render( "Time: %.2f" % (time.time() - self.StartTime - self.TimePaused) , 1 , (255,255,255) )
 			self.Screen.blit( timer , ( 10 , 10) ) 
 			
-		
-			
 	def DrawPauseMenu( self ):
 		rect = pygame.Surface( ( self.Screen.get_width() , self.Screen.get_height() ) , pygame.SRCALPHA , 32 )
 		rect.fill( (0,0,0,200) )
@@ -186,6 +188,20 @@ class PlayState( State ):
 		self.Screen.blit( winTimeText , ( self.Screen.get_width() / 2 - winTimeText.get_width() / 2 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 60 ))
 		self.Buttons[2].DrawButton( self.Screen )
 		
+		if( self.NewHighScore ):
+			highScoreText = self.Text.render( "New High Score! Your Place: "+str(self.Rank) , 1 , (255,255,255) )
+			self.Screen.blit( highScoreText , ( self.Screen.get_width() / 2 - highScoreText.get_width() / 2 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 100 ))
+			string = ""
+			for char in range(3):
+				if( self.CursorLoc == char):
+					if( int(time.time()) % 2 == 0 ):
+						string += "| "
+					else:
+						string += " "
+				string += self.PlayerName[char]+" "
+			playerString = self.Text.render( string , 1 , (255,255,255) )
+			self.Screen.blit( playerString , ( self.Screen.get_width() / 2 - playerString.get_width() / 2 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 140 ))
+			
 	def ButtonHandler( self , button ):
 		self.MouseReleased = False
 		if( button.ButtonId == 'Menu' ):
