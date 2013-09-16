@@ -59,9 +59,9 @@ class PlayState( State ):
 		
 	def InitializeButtons( self ):
 		self.Buttons = []
-		self.Buttons.append( Button.Button( self.Screen.get_width() - 160 , 10 , 'Menu' , 'button_menu_standard.png' , 'button_menu_hover.png' , self.ButtonHandler ))
-		self.Buttons.append( Button.Button( self.Screen.get_width() / 2 - 75 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - 60 , 'Resume' , 'button_back_standard.png' , 'button_back_hover.png' , self.ButtonHandler ))
-		self.Buttons.append( Button.Button( self.Screen.get_width() / 2 - 75 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - 180 , 'Quit' , 'button_quit_standard.png' , 'button_quit_hover.png' , self.ButtonHandler ))
+		self.Buttons.append( Button.Button( self.Screen.get_width() - 160 , 10 , 'Menu' , 'button_standard.png' , 'button_hover.png' , self.ButtonHandler ))
+		self.Buttons.append( Button.Button( self.Screen.get_width() / 2 - 75 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - 180 , 'Resume' , 'button_standard.png' , 'button_hover.png' , self.ButtonHandler ))
+		self.Buttons.append( Button.Button( self.Screen.get_width() / 2 - 75 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - 60 , 'Quit' , 'button_standard.png' , 'button_hover.png' , self.ButtonHandler ))
 		
 	def ExecuteStateLogic( self , KeysHeld , KeysPressed , clock ):
 		if( not pygame.mouse.get_pressed()[0] and self.SelectedDisk ):
@@ -180,7 +180,7 @@ class PlayState( State ):
 		screen.blit( self.LeftForground , ( 0 , screen.get_height() - self.LeftForground.get_height() ))
 		screen.blit( self.RightForground , ( screen.get_width() - self.RightForground.get_width() , screen.get_height() - self.RightForground.get_height() ))
 		
-		self.Buttons[0].DrawButton( self.Screen )
+		self.Buttons[0].DrawButtonWithText( self.Screen )
 		
 		for disk in self.Disks:
 			disk.DrawButton()
@@ -200,8 +200,8 @@ class PlayState( State ):
 		rect.fill( (0,0,0,200) )
 		self.Screen.blit( rect , (0,0) )
 		self.Screen.blit( self.MenuBackgroundOverlay , ( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 ))
-		self.Buttons[1].DrawButton( self.Screen )
-		self.Buttons[2].DrawButton( self.Screen )
+		self.Buttons[1].DrawButtonWithText( self.Screen )
+		self.Buttons[2].DrawButtonWithText( self.Screen )
 		
 	def DrawWin( self ):
 		rect = pygame.Surface( ( self.Screen.get_width() , self.Screen.get_height() ) , pygame.SRCALPHA , 32 )
@@ -213,7 +213,7 @@ class PlayState( State ):
 		winTimeText = self.Text.render( "Time: %.2f" % self.WinTime , 1 , (255,255,255) )
 		self.Screen.blit( winText , ( self.Screen.get_width() / 2 - winText.get_width() / 2 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 20 ))
 		self.Screen.blit( winTimeText , ( self.Screen.get_width() / 2 - winTimeText.get_width() / 2 , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 60 ))
-		self.Buttons[2].DrawButton( self.Screen )
+		self.Buttons[2].DrawButtonWithText( self.Screen )
 		
 		if( self.NewHighScore ):
 			highScoreText = self.Text.render( "New High Score! Your Place: "+str(self.Rank) , 1 , (255,255,255) )

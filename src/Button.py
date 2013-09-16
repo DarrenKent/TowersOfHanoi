@@ -24,6 +24,9 @@ class Button:
 		self.Hover = False
 		self.ButtonHandler = buttonHandler
 		
+		self.Text = pygame.font.SysFont( "times", 24 , True , False )
+		self.Label = self.Text.render( str(self.ButtonId) , 1 , (255,255,255) )
+		
 	def IsMouseInside( self ):
 		return self.Hover
 		
@@ -42,4 +45,9 @@ class Button:
 			screen.blit( self.HoverImage , ( self.X , self.Y ))
 		else:
 			screen.blit( self.StandardImage , ( self.X , self.Y ))
+			
+	def DrawButtonWithText( self , screen ):
+		self.DrawButton( screen )
+		screen.blit( self.Label , (  self.X + (self.Width - self.Label.get_width()) / 2 , self.Y + (self.Height - self.Label.get_height()) / 2 ))
+		
 			
