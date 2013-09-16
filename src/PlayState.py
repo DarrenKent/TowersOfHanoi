@@ -114,6 +114,9 @@ class PlayState( State ):
 		tX , tY = pygame.mouse.get_pos()
 		self.Buttons[2].SetMouseHover( tX , tY )
 		if( self.Buttons[2].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
+			tPlayerName = "".join(self.PlayerName)
+			tNewScore = (str(self.WinTime),tPlayerName)
+			self.GameController.HighScores["["+str(self.NumDisks)+"-"+str(self.Rank)+"]"] = tNewScore
 			self.GameController.WriteHighScores()
 			self.Buttons[2].ExecuteButton()
 			
@@ -123,10 +126,23 @@ class PlayState( State ):
 				self.CursorLoc = 0
 		elif( pygame.K_RIGHT in self.GameController.KeyPressed ):
 			self.CursorLoc += 1
-			if( self.CursorLoc > 2):
-				self.CursorLoc = 2
-
-		print self.GameController.KeyPressed
+			if( self.CursorLoc > 3):
+				self.CursorLoc = 3
+		elif( pygame.K_BACKSPACE in self.GameController.KeyPressed ):
+			self.CursorLoc -= 1
+			if( self.CursorLoc < 0 ):
+				self.CursorLoc = 0
+			self.PlayerName[self.CursorLoc] = "_"
+				
+		try:
+			tNewChar = chr(self.GameController.KeyPressed.pop())
+			if( tNewChar.isalnum() ):
+				self.PlayerName[self.CursorLoc] = tNewChar
+				self.CursorLoc += 1
+				if(self.CursorLoc > 3):
+					self.CursorLoc = 3
+		except:
+			pass
 			
 	def CheckForWin( self ):
 		if( self.Towers[2] == self.NumDisks ):
