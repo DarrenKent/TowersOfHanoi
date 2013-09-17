@@ -13,8 +13,9 @@ import pygame
 import Button
 
 class Disk ( Button.Button ):
-	def __init__( self , diskId , row , column , image , screen , buttonHandler ):
+	def __init__( self , diskId , row , column , image , screen , buttonHandler , color ):
 		self.DiskImage = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , image ))
+		self.Color = color
 		Button.Button.__init__( self , 
 						screen.get_width() / 2 - 236 + 236 * column - self.DiskImage.get_width() / 2 , 
 						screen.get_height() - 95 - 35 * (row) , 
@@ -31,6 +32,10 @@ class Disk ( Button.Button ):
 		
 	def DrawButton( self ):
 		self.Screen.blit( self.DiskImage , ( self.NewX , self.NewY ))
+		rect = pygame.Surface( ( self.Width , self.Height ) , pygame.SRCALPHA , 32 )
+		rect.fill( self.Color )
+		self.Screen.blit( rect , ( self.NewX , self.NewY ),None,pygame.BLEND_RGB_MULT)
+		
 	
 	def SetMouseHover( self , mouseX , mouseY ):
 		if( mouseX > self.NewX and mouseX < self.NewX + self.Width ):

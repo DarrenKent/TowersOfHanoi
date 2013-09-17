@@ -17,10 +17,11 @@ import Disk
 
 
 class PlayState( State ):
-	def __init__( self , screen , gameController , numDisks ):
+	def __init__( self , screen , gameController , numDisks , color ):
 		State.__init__( self )
 		self.Screen = screen
 		self.NumDisks = numDisks
+		self.Color = color
 		self.GameController = gameController
 		self.GameController.RetrieveHighScores( False )
 		self.Texture = 'jungle'
@@ -39,7 +40,7 @@ class PlayState( State ):
 		self.CursorLoc = 0
 		self.NewHighScore = False
 		for disk in range( numDisks ):
-			tNewDisk = Disk.Disk( disk , numDisks - disk , 0 , "disk_"+str(disk+1)+"_red.png" , screen , self.DiskHandler )
+			tNewDisk = Disk.Disk( disk , numDisks - disk , 0 , "disk_"+str(disk+1)+".png" , screen , self.DiskHandler , self.Color )
 			self.Disks.append( tNewDisk )
 			self.Towers[0] += 1
 			self.TowersList[0].append(disk)
