@@ -31,7 +31,7 @@ class MainMenuState( State ):
 		self.ScoresPage = 1
 		self.NumDisks = 3
 		self.ColorNum = 0
-		self.Colors = [ (255,0,0) , (0,255,0) , (0,0,255) ]
+		self.Colors = [ (255,0,0) , (0,255,0) , (0,0,255) , (255,0,255) , (255,255,0) , (0,255,255) ]
 		
 		# Background Images
 		self.Background = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'jungle_background.png' ))
