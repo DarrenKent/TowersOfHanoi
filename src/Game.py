@@ -18,7 +18,10 @@ class TowersOfHanoi( GameController ):
 		GameController.__init__( self , 'Towers Of Hanoi')
 		self.StateMgr = StateManager.StateManager( self.Screen , self)
 		self.HighScores = {}
-		
+	
+	''' Method: GameLogic
+		Executes once per "frame" and
+		performs the operations of the game'''
 	def GameLogic( self ):
 		if( self.StateMgr.CurrentState == 'QuitState' ):
 			self.Active = False
@@ -31,10 +34,16 @@ class TowersOfHanoi( GameController ):
 				self.StateMgr.SetState( 'QuitState' )
 			if( self.StateMgr.CurrentState == 'PlayState' and self.StateMgr.GetCurrentState().StateQuit ):
 				self.StateMgr.SetState( 'MainMenuState' )
-			
+	
+	''' Method: DrawScreen
+		Draws one frame of the game based on
+		what the current state is.'''
 	def DrawScreen( self ):
 		self.StateMgr.DrawCurrentState( self.Screen , self.Clock )
 		
+	''' Method: RetrieveHighScores
+		Opens the high scores document and 
+		stores them in a class variable'''
 	def RetrieveHighScores( self , reset ):
 		# Clear current High Scores
 		self.HighScores = {}
@@ -61,6 +70,9 @@ class TowersOfHanoi( GameController ):
 			
 		file.close()
 		
+	''' Method: WriteHighScores
+		Opens the high scores document and
+		writes the currently stored scores.'''
 	def WriteHighScores( self ):
 		file = open( 'user/pscores.cfg' , 'w')
 		for score in self.HighScores:

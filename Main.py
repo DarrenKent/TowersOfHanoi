@@ -13,8 +13,10 @@ import sys
 sys.path.insert(0,'src/')
 import Game
 
+''' Function: Main
+	Creates an instance of the game and
+	runs it.'''
 def main():
-	# Create Game Object and Start Game
 	game = Game.TowersOfHanoi()
 	game.Run()
 

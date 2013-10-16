@@ -21,7 +21,6 @@ class MainMenuState( State ):
 	def __init__( self , screen , gamecontroller ):
 		State.__init__( self )
 		
-		# Class Variables
 		self.Screen = screen
 		self.MenuStates = [ 'MainMenu' , 'SettingsMenu' , 'HighScores' , 'PlayMenu' ]
 		self.CurrentMenu = self.MenuStates[0]
@@ -45,22 +44,31 @@ class MainMenuState( State ):
 		
 		self.InitializeButtons()
 		
+	''' Method: PlayBGMusic
+		Start up the background music and set
+		it to loop.'''
 	def PlayBGMusic( self ):
 		pygame.mixer.music.load( os.path.join( os.path.join( 'data' , 'music' ) , "MasalaMadness(Pad).mp3" ))
 		pygame.mixer.music.set_volume(self.GameController.UserSettings["[MusicVolume]"]/100.0)
 		pygame.mixer.music.play(-1)
 
+	''' Method: InitializeButtons
+		Create instances of all of the buttons
+		used in the Main Menu and sub Menus.'''
 	def InitializeButtons( self ):
+		# Create Text Objects
 		self.Text = pygame.font.SysFont( "times", 24 , True , False )
 		self.SFXVolumeText = self.Text.render( "SFX Volume" , 1 , (255,255,255) )
 		self.MusicVolumeText = self.Text.render( "Music Volume" , 1 , (255,255,255) )
 		self.PlayTitleText = self.Text.render( "Play" , 1 ,  (255,255,255) )
 		self.NumDisksText = self.Text.render( "Number of Disks" , 1 , (255,255,255) )
 		
+		# Create Slider Bar and Check Box images
 		self.SliderBar = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'slider_bar.png' ))
 		self.CheckBoxEmpty = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures' ) , 'checkbox_unchecked.png' ))
 		self.CheckBoxChecked = pygame.image.load( os.path.join( os.path.join( 'data' , 'textures') , 'checkbox_checked.png' ))
 		
+		# Create Button Objects
 		self.MenuButtons = []
 		ButtonImages = [ 'Quit' , 'Settings' , 'High Scores' , 'Play' ]
 		for button in range( len( ButtonImages )):
@@ -74,6 +82,7 @@ class MainMenuState( State ):
 		self.MenuButtons.append(Button.Button( self.Screen.get_width() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - 160 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_height() / 2 - 120 , 'Start' , 'button_standard.png' , 'button_hover.png' , self.ButtonHandler ))
 		self.MenuButtons.append(Button.Button( self.Screen.get_width() / 2 + self.MenuBackgroundOverlay.get_width() / 2 - 320 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_height() / 2 - 120, 'Reset Scores' , 'button_standard.png' , 'button_hover.png' , self.ButtonHandler ))
 		
+		# Create Arros Objects
 		self.Arrows = []
 		self.Arrows.append(Arrow.Arrow( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 30 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_height() / 2 - 50 , 'ScoresLeft' , 'arrow_left_standard.png' , 'arrow_left_hover.png' , 'arrow_left_gray.png' , self.ArrowHandler ))
 		self.Arrows.append(Arrow.Arrow( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 70 , self.Screen.get_height() / 2 + self.MenuBackgroundOverlay.get_height() / 2 - 50 , 'ScoresRight' , 'arrow_right_standard.png' , 'arrow_right_hover.png' , 'arrow_right_gray.png' , self.ArrowHandler ))
@@ -82,13 +91,10 @@ class MainMenuState( State ):
 		self.Arrows.append(Arrow.Arrow( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 30 , self.Screen.get_height() / 2 - 50, 'DiskColorLeft' , 'arrow_left_standard.png' , 'arrow_left_hover.png' , 'arrow_left_gray.png' , self.ArrowHandler ))
 		self.Arrows.append(Arrow.Arrow( self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 180 , self.Screen.get_height() / 2 - 50, 'DiskColorRight' , 'arrow_right_standard.png' , 'arrow_right_hover.png' , 'arrow_right_gray.png' , self.ArrowHandler ))
 		
-		
+		# Create Check Box Objects
 		self.CheckBoxes = []
 		Checks = [ 'Fullscreen:' , '800x600' , '1024x768' , '1280x768' , '1360x768' , '1366x768' , '1600x900' ]
-		
 		columns = [ self.Screen.get_width() / 2 - self.MenuBackgroundOverlay.get_width() / 2 + 30 , self.Screen.get_width() / 2 ]
-		
-		
 		Fullscreen = CheckBox.CheckBox( columns[0] , self.Screen.get_height() / 2 - self.MenuBackgroundOverlay.get_height() / 2 + 30 , Checks[0] , Checks[0] , self.Text )
 		if( self.GameController.UserSettings['[Fullscreen]'] == 1 ):
 			Fullscreen.Checked = True
@@ -103,8 +109,9 @@ class MainMenuState( State ):
 				self.CheckBoxes.append(tCheckBox)
 				count += 1
 				
-		
-		
+	''' Method: ExecuteStateLogic
+		Executes one frame of game operations based
+		on what the current menu is.'''
 	def ExecuteStateLogic( self , KeysHeld , KeysPressed , clock ):
 		if( not pygame.mixer.music.get_busy() ):
 			self.PlayBGMusic()
@@ -124,6 +131,8 @@ class MainMenuState( State ):
 		elif( self.CurrentMenu == self.MenuStates[3] ):
 			self.ExecutePlayMenu()
 						
+	''' Method: DrawStateFrame
+		Draws One frame of the Main Menu State.'''
 	def DrawStateFrame( self , screen , clock ):
 		screen.fill( (0,253,251) )
 		
@@ -135,6 +144,7 @@ class MainMenuState( State ):
 		screen.blit( self.LeftForground , ( 0 , screen.get_height() - self.LeftForground.get_height() ))
 		screen.blit( self.RightForground , ( screen.get_width() - self.RightForground.get_width() , screen.get_height() - self.RightForground.get_height() ))
 		
+		# Draw the Proper Menu
 		if( self.CurrentMenu == self.MenuStates[0] ):
 			self.DrawMainMenu()
 		elif( self.CurrentMenu == self.MenuStates[1] ):
@@ -144,15 +154,23 @@ class MainMenuState( State ):
 		elif( self.CurrentMenu == self.MenuStates[3] ):
 			self.DrawPlayMenu()
 		
+	''' Method: ExecuteMainMenu
+		Executes one frame of Main Menu operations.'''
 	def ExecuteMainMenu( self ):
-		# Buttons
+		# Get Mouse Coords
 		tX,tY = pygame.mouse.get_pos()
+		
+		# Check To See If Mouse is Over any Buttons
 		for button in self.MenuButtons:
 			button.SetMouseHover( tX, tY )
+			
+			# Press Button Check
 			if( button.IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
 				self.MouseReleased = False
 				button.ExecuteButton()
 		
+	''' Method: ExecuteSettingsMenu
+		Executes one frame of Settings Menu operations'''
 	def ExecuteSettingsMenu( self ):
 		# Get Mouse Coords
 		tX,tY = pygame.mouse.get_pos()
@@ -167,7 +185,7 @@ class MainMenuState( State ):
 		for check in self.CheckBoxes:
 			check.SetMouseHover( tX, tY )
 		
-		# Button Press Checks
+		# Button Press Check
 		for button in range( 4 ):
 			if( self.MenuButtons[button+4].IsMouseInside() and pygame.mouse.get_pressed()[0] and self.MouseReleased ):
 				self.MenuButtons[button+4].ExecuteButton()
