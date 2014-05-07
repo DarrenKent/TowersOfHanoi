@@ -26,8 +26,9 @@ class GameController:
 		# Initialize Window
 		self.Screen = None
 		self.InitializeWindow( name )
-		pygame.init()
-		pygame.mixer.init()
+        pygame.mixer.pre_init(22050, -16, 2, 1024)
+        pygame.init()
+        pygame.mixer.init()
 	
 	''' Method: InitializeWindow
 		Changes the display mode of the screen

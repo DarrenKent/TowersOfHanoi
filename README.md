@@ -15,3 +15,12 @@ ever since I got my first NES when I was a kid, video games. Over time I have de
 skills that will help me in the future of making games. For a long time I worked as a graphic
 artist and I have recently been working on my Bachelors degree in Computer Science. I figured
 with the skills I have, why not try my hand at making games.
+
+Music Credits
+-------------
+www.freestockmusic.com
+www.incompetech.com
+
+SFX Credits
+-------------
+www.freesound.org
