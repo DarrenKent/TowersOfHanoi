@@ -18,7 +18,8 @@ with the skills I have, why not try my hand at making games and I have been lovi
 
 Music Credits
 -------------
-www.freestockmusic.com\n
+www.freestockmusic.com
+
 www.incompetech.com
 
 SFX Credits
